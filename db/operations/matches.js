@@ -71,3 +71,18 @@ export async function enterPlayerStats(matchId, statsArray) {
     { $set: { playerStats: statsArray } }
   );
 }
+
+export const recordMatchScore = async (matchId, team1Score, team2Score) => {
+  const matchCol = await matches();
+  const updated = await matchCol.findOneAndUpdate(
+    { _id: new ObjectId(matchId) },
+    { $set: { team1Score, team2Score, winner: team1Score > team2Score ? 'team1' : 'team2' } },
+    { returnDocument: 'after' }
+  );
+  return updated;
+};
+
+export const getMatchResults = async () => {
+  const matchCol = await matches();
+  return await matchCol.find({ team1Score: { $exists: true } }).toArray();
+};

@@ -54,14 +54,4 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// Update Session for role checking
-router.get('/session', (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Not logged in' });
-  }
-
-  
-  res.json({ user: req.session.user });
-});
-
 export default router;

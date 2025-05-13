@@ -70,4 +70,13 @@ router.post('/:matchId/enter-stats', isAuthenticated, hasRole('TournamentDirecto
   }
 });
 
+router.get('/results', async (req, res) => {
+  try {
+    const results = await getMatchResults();
+    res.json(results);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 export default router;
