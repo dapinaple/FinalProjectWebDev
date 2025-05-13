@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Scoreboard</title>
+  <link rel="stylesheet" href="/css/scoreboard.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="scoreboard-container">
+    <h1>Live Volleyball Scoreboard</h1>
+    <div id="scoreboards">Loading matches...</div>
+  </div>
+  <template id="scoreboard-template">
+    <div class="match-scoreboard">
+      <div class="match-header">
+        <span class="match-title">Match Title</span>
+        <span class="match-time">Scheduled Time</span>
+      </div>
+      <div class="score-display">
+        <div class="team-name team-a-name">Team A</div>
+        <div class="score score-a">0</div>
+        <div class="vs">vs</div>
+        <div class="score score-b">0</div>
+        <div class="team-name team-b-name">Team B</div>
+      </div>
+      <div class="stats-section">
+        <h2 class="stats-heading">Player Statistics</h2>
+        <div class="stats-tables">
+          <div class="team-stats team-a-stats">
+            <h3 class="team-a-name">Team A</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Kills</th>
+                  <th>Blocks</th>
+                  <th>Digs</th>
+                  <th>Aces</th>
+                  <th>Assists</th>
+                  <th>Errors</th>
+                </tr>
+              </thead>
+              <tbody class="team-a-stats-body">
+                <tr><td colspan="7" class="no-stats">No statistics available</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="team-stats team-b-stats">
+            <h3 class="team-b-name">Team B</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Kills</th>
+                  <th>Blocks</th>
+                  <th>Digs</th>
+                  <th>Aces</th>
+                  <th>Assists</th>
+                  <th>Errors</th>
+                </tr>
+              </thead>
+              <tbody class="team-b-stats-body">
+                <tr><td colspan="7" class="no-stats">No statistics available</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="last-update">Last updated: <span class="update-time">Never</span></div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    const socket = io()
+    const activeMatches = {}
+
+    //get all current matches
+    async function loadScoreboards() {
+      try {
+        const res = await fetch('/api/public/active-matches')
+        const matches = await res.json()
+        const container = document.getElementById('scoreboards')
+        container.innerHTML = ''
+        if (!matches.length) {
+          container.innerHTML = '<p>No active matches at the moment.</p>'
+          return
+        }
+        matches.forEach(match => {
+          createScoreboard(match)
+          activeMatches[match.id] = match
+          loadPlayerStats(match.id)
+        })
+      } catch (e) {
+        console.error('err loading scoreboards:', e)
+        document.getElementById('scoreboards').innerHTML = '<p>Error loading match data.</p>'
+      }
+    }
+    //add a scoreboard
+    function createScoreboard(match) {
+      const template = document.getElementById('scoreboard-template')
+      const scoreboard = template.content.cloneNode(true)
+      const el = scoreboard.querySelector('.match-scoreboard')
+      el.dataset.matchId = match.id
+      scoreboard.querySelectorAll('.team-a-name').forEach(e => e.textContent = match.teamAName)
+      scoreboard.querySelectorAll('.team-b-name').forEach(e => e.textContent = match.teamBName)
+      scoreboard.querySelector('.match-title').textContent = `${match.teamAName} vs ${match.teamBName}`
+      scoreboard.querySelector('.match-time').textContent = new Date(match.scheduledTime).toLocaleString()
+      scoreboard.querySelector('.score-a').textContent = match.scoreA || 0
+      scoreboard.querySelector('.score-b').textContent = match.scoreB || 0
+      document.getElementById('scoreboards').appendChild(scoreboard)
+    }
+
+    //get stats for a match
+    async function loadPlayerStats(matchId) {
+      try {
+        const res = await fetch(`/api/public/match-stats/${matchId}`)
+        const data = await res.json()
+        if (!data.stats || !data.stats.length) return
+        updatePlayerStats(matchId, data.stats, data.teamAId, data.teamBId)
+        const el = document.querySelector(`.match-scoreboard[data-match-id="${matchId}"]`)
+        el.querySelector('.update-time').textContent = new Date().toLocaleTimeString()
+      } catch (e) {
+        console.error(`err loading stats for match ${matchId}:`, e)
+      }
+    }
+    //fill stats into match table
+    function updatePlayerStats(matchId, stats, teamAId, teamBId) {
+      const el = document.querySelector(`.match-scoreboard[data-match-id="${matchId}"]`)
+      const teamAStats = stats.filter(p => p.teamId === teamAId)
+      const teamBStats = stats.filter(p => p.teamId === teamBId)
+      updateStatsTable(el.querySelector('.team-a-stats-body'), teamAStats)
+      updateStatsTable(el.querySelector('.team-b-stats-body'), teamBStats)
+    }
+    async function getPlayerName(playerId) {
+        const res = await fetch(`/api/users/${playerId}`);
+        const data = await res.json();
+        return `${data.firstName} ${data.lastName}`;
+    }
+
+    //update a single table
+    async function updateStatsTable(tableBody, players) {
+        
+      tableBody.innerHTML = ''
+      if (!players.length) {
+        tableBody.innerHTML = '<tr><td colspan="7" class="no-stats">No statistics available</td></tr>'
+        return
+      }
+      players.forEach(p => {
+        console.log(p);
+        //const name = await getPlayerName(p.id);
+        const row = document.createElement('tr')
+        row.innerHTML = `
+          <td>${p.name}</td>
+          <td>${p.kills || 0}</td>
+          <td>${p.blocks || 0}</td>
+          <td>${p.digs || 0}</td>
+          <td>${p.aces || 0}</td>
+          <td>${p.assists || 0}</td>
+          <td>${p.errors || 0}</td>
+        `
+        tableBody.appendChild(row)
+      })
+    }
+    socket.on('connect', () => {
+      console.log('connected to ws server')
+    })
+    socket.on('broadcastScore', data => {
+      const el = document.querySelector(`.match-scoreboard[data-match-id="${data.matchId}"]`)
+      if (el) {
+        el.querySelector('.score-a').textContent = data.scoreA
+        el.querySelector('.score-b').textContent = data.scoreB
+      }
+    })
+    socket.on('playerStatsUpdated', data => {
+      if (data.matchId) loadPlayerStats(data.matchId)
+    })
+    window.addEventListener('DOMContentLoaded', loadScoreboards)
+  </script>
+</body>
+</html>

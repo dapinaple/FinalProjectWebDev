@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tournament Director Dashboard</title>
+    <link rel="stylesheet" href="/css/director.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script defer src="/js/director.js"></script>
+    
+</head>
+<body>
+    <h1>Tournament Director Dashboard</h1>
+    <h2>Live Matches (Today)</h2>
+    <div id="live-matches">Loading matches...</div>
+    
+    <template id="match-template">
+        <div class="match-container">
+            <div class="match-header">
+                <h3 class="match-title">Team A vs Team B</h3>
+                <span class="match-time">Scheduled Time</span>
+            </div>
+            
+            <div class="score-section">
+                <div class="score-input">
+                    <span class="team-a-name">Team A</span>
+                    <input type="number" name="scoreA" value="0" min="0" required />
+                </div>
+                <span>vs</span>
+                <div class="score-input">
+                    <input type="number" name="scoreB" value="0" min="0" required />
+                    <span class="team-b-name">Team B</span>
+                </div>
+                <button type="button" class="score-button">Update Score</button>
+            </div>
+            
+            <h3>Player Statistics</h3>
+            <div class="team-stats">
+                <div class="team-roster team-a-roster">
+                    <h4 class="team-a-name">Team A Roster</h4>
+                    <div class="player-list-a">Loading players...</div>
+                </div>
+                
+                <div class="team-roster team-b-roster">
+                    <h4 class="team-b-name">Team B Roster</h4>
+                    <div class="player-list-b">Loading players...</div>
+                </div>
+            </div>
+            
+            <div class="submit-buttons">
+                <button type="button" class="stats-button">Submit Player Stats</button>
+                <span class="stats-saved">Statistics saved successfully!</span>
+            </div>
+        </div>
+    </template>
+    
+    <template id="player-stat-template">
+        <div class="player-stat-row">
+            <span class="player-name">Player Name</span>
+            <div class="stat-input">
+                <label for="kills">Kills:</label>
+                <input type="number" name="kills" value="0" min="0">
+            </div>
+            <div class="stat-input">
+                <label for="digs">Digs:</label>
+                <input type="number" name="digs" value="0" min="0">
+            </div>
+            <div class="stat-input">
+                <label for="blocks">Blocks:</label>
+                <input type="number" name="blocks" value="0" min="0">
+            </div>
+            <div class="stat-input">
+                <label for="assists">Assists:</label>
+                <input type="number" name="assists" value="0" min="0">
+            </div>
+            <div class="stat-input">
+                <label for="aces">Aces:</label>
+                <input type="number" name="aces" value="0" min="0">
+            </div>
+            <div class="stat-input">
+                <label for="errors">Errors:</label>
+                <input type="number" name="errors" value="0" min="0">
+            </div>
+        </div>
+    </template>
+</body>
+</html>
