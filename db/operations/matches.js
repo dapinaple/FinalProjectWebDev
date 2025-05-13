@@ -1,3 +1,4 @@
+import { compareSync } from 'bcrypt';
 import { matches, tournaments, teams } from '../../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
 
@@ -7,7 +8,7 @@ export async function getMatch(matchId) {
   if(!res) throw new Error('Match not found')
 }
 
-export async function createMatch({ tournamentId, teamA, teamB }) {
+export async function createMatch({ tournamentId, teamA, teamB, scheduledTime }) {
 
   const tournamentCollection = await tournaments();
   const teamsCollection = await teams();
@@ -27,12 +28,12 @@ export async function createMatch({ tournamentId, teamA, teamB }) {
     teamB: new ObjectId(teamB),
     scoreA: 0,
     scoreB: 0,
-    statsEntered: false,
-    playerStats: []
+    scheduledTime: scheduledTime
+    //statsEntered: false,
+    //playerStats: []
   };
 
   const result = await matchCollection.insertOne(newMatch);
-  console.log(result)
   await tournamentCollection.updateOne(
     { _id: new ObjectId(tournamentId) },
     { $push: { matches: result.insertedId } }
