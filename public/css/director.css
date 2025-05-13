@@ -1,0 +1,127 @@
+/* match-styles.css */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.match-container {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.score-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.score-input {
+    display: flex;
+    align-items: center;
+}
+
+.score-input input {
+    width: 60px;
+    padding: 5px;
+    margin: 0 10px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.team-stats {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.team-roster {
+    width: 48%;
+    margin-bottom: 15px;
+}
+
+.player-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    align-items: center;
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 3px;
+    border: 1px solid #eee;
+}
+
+.player-name {
+    width: 140px;
+    font-weight: bold;
+}
+
+.stat-input {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.stat-input label {
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.stat-input input {
+    width: 40px;
+    padding: 3px;
+    text-align: center;
+}
+
+.submit-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button.score-button {
+    background-color: #2196F3;
+}
+
+button.score-button:hover {
+    background-color: #0b7dda;
+}
+
+button.stats-button {
+    background-color: #FF9800;
+}
+
+button.stats-button:hover {
+    background-color: #e68a00;
+}
+
+.stats-saved {
+    color: green;
+    font-weight: bold;
+    display: none;
+    margin-left: 10px;
+}

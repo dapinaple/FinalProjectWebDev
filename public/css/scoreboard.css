@@ -1,0 +1,119 @@
+/* scoreboard-styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.scoreboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.match-scoreboard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.match-header {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    font-size: 1.2em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.score-display {
+    background-color: #f8f8f8;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+.team-name {
+    flex: 1;
+    text-align: center;
+}
+
+.score {
+    padding: 0 20px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.vs {
+    padding: 0 15px;
+    color: #999;
+}
+
+.stats-section {
+    padding: 20px;
+}
+
+.stats-heading {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.stats-tables {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.team-stats {
+    width: 48%;
+    margin-bottom: 20px;
+}
+
+.team-stats h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.highlight {
+    background-color: #ffffcc;
+}
+
+.last-update {
+    font-size: 0.8em;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.no-stats {
+    color: #666;
+    font-style: italic;
+    padding: 10px 0;
+}

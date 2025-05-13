@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tournament Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h2>Your Tournaments</h2>
+    <div id="tournamentList" class="mb-4"></div>
+
+    <h4>Create New Tournament</h4>
+    <form id="createTournamentForm">
+      <div class="mb-2">
+        <label class="form-label">Tournament Name</label>
+        <input type="text" class="form-control" id="name" required />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Complex</label>
+        <select class="form-select" id="complexId" required>
+          <option value="">Loading complexes...</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Start Date</label>
+        <input type="date" class="form-control" id="startDate" required />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">End Date</label>
+        <input type="date" class="form-control" id="endDate" required />
+      </div>
+      <button type="submit" class="btn btn-success">Create Tournament</button>
+      <div class="mt-2 text-danger" id="error"></div>
+    </form>
+
+    <h2 class="mt-5">All Matches</h2>
+    <div id="matchList" class="mb-4"></div> 
+
+    <h4 class="mt-5">Create New Match</h4>
+    <form id="createMatchForm">
+      <div class="mb-2">
+        <label class="form-label">Team A ID</label>
+        <input type="text" class="form-control" id="teamA" required />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Team B ID</label>
+        <input type="text" class="form-control" id="teamB" required />
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Tournament</label>
+        <select class="form-select" id="tournamentId" required>
+          <option value="">Select a tournament...</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label class="form-label">Scheduled Time</label>
+        <input type="datetime-local" class="form-control" id="scheduledTime" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Create Match</button>
+      <div class="mt-2 text-danger" id="matchError"></div>
+    </form>
+  </div>
+
+  <script>
+    //variables to store data
+    let allMatches = [];
+    let allTournaments = [];
+    
+    async function populateComplexDropdown() {
+      try {
+        const res = await fetch('/api/complexes/all-public');
+        if (!res.ok) throw new Error('Unable to fetch complexes');
+        const complexes = await res.json();
+
+        const select = document.getElementById('complexId');
+        select.innerHTML = '<option value="">Select a complex</option>';
+        complexes.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c._id;
+          opt.textContent = c.name;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        document.getElementById('complexId').innerHTML = '<option value="">Error loading complexes</option>';
+        console.error("Error loading complexes:", err);
+      }
+    }
+
+    async function loadTournaments() {
+      try {
+        //console.log("Loading tournaments...");
+        const res = await fetch('/api/tournaments');
+        if (!res.ok) throw new Error(`Failed to fetch tournaments: ${res.status}`);
+        
+        const tournaments = await res.json();
+        allTournaments = tournaments; //globally
+        
+        const list = document.getElementById('tournamentList');
+        list.innerHTML = '';
+
+        //populate the tournament dropdown
+        const tournamentSelect = document.getElementById('tournamentId');
+        tournamentSelect.innerHTML = '<option value="">Select a tournament...</option>';
+
+        if (!Array.isArray(tournaments) || tournaments.length === 0) {
+          list.innerHTML = '<p class="text-muted">No tournaments found.</p>';
+          return;
+        }
+
+        //matches data
+        if (allMatches.length === 0) {
+          await loadMatches(false); 
+        }
+        tournaments.forEach(t => {
+          //tournament card
+          const div = document.createElement('div');
+          div.className = 'card mb-4';
+
+          const header = document.createElement('div');
+          header.className = 'card-header';
+          header.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">${t.name}</h5>
+              <button class="btn btn-sm btn-danger" onclick="deleteTournament('${t._id}')">Delete</button>
+            </div>
+          `;
+          
+          // Tournament body with dates
+          const body = document.createElement('div');
+          body.className = 'card-body';
+          body.innerHTML = `
+            <p class="card-text">
+              ${new Date(t.startDate).toLocaleDateString()} - ${new Date(t.endDate).toLocaleDateString()}<br/>
+              <small class="text-muted">ID: ${t._id}</small>
+            </p>
+          `;
+          
+          // Filter matches for this tournament
+          const tournamentMatches = allMatches.filter(m => m.tournamentId === t._id);
+          
+          // Matches section
+          const matchesSection = document.createElement('div');
+          matchesSection.className = 'card-body border-top pt-3';
+          
+          const matchesTitle = document.createElement('h6');
+          matchesTitle.className = 'card-subtitle mb-2';
+          matchesTitle.textContent = 'Matches in this tournament:';
+          matchesSection.appendChild(matchesTitle);
+          
+          if (tournamentMatches.length === 0) {
+            const noMatches = document.createElement('p');
+            noMatches.className = 'text-muted';
+            noMatches.textContent = 'No matches in this tournament yet.';
+            matchesSection.appendChild(noMatches);
+          } else {
+            const matchesList = document.createElement('div');
+            matchesList.className = 'ms-2';
+            
+            tournamentMatches.forEach(m => {
+              const matchItem = document.createElement('div');
+              matchItem.className = 'card mb-2';
+              matchItem.innerHTML = `
+                <div class="card-body py-2">
+                  <strong>${m.teamA} vs ${m.teamB}</strong><br/>
+                  <small>Scheduled: ${new Date(m.scheduledTime).toLocaleString()}</small>
+                </div>
+              `;
+              matchesList.appendChild(matchItem);
+            });
+            
+            matchesSection.appendChild(matchesList);
+          }
+          
+          //tournament card
+          div.appendChild(header);
+          div.appendChild(body);
+          div.appendChild(matchesSection);
+          list.appendChild(div);
+          //tournament select dropdown
+          const opt = document.createElement('option');
+          opt.value = t._id;
+          opt.textContent = t.name;
+          tournamentSelect.appendChild(opt);
+        });
+      } catch (err) {
+        document.getElementById('tournamentList').textContent = 'Error loading tournaments.';
+        console.error("Error loading tournaments:", err);
+      }
+    }
+
+    async function deleteTournament(id) {
+      if (!confirm('Are you sure you want to delete this tournament?')) return;
+
+      try {
+        const res = await fetch(`/api/tournaments/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          loadTournaments();
+          loadMatches();
+        } else {
+          alert(result.error || 'Failed to delete tournament.');
+        }
+      } catch (err) {
+        alert('Error deleting tournament.');
+        console.error("Error deleting tournament:", err);
+      }
+    }
+
+    async function loadMatches(renderToList = true) {
+      try {
+        console.log("Loading all matches...");
+        const res = await fetch('/api/matches');
+        if (!res.ok) throw new Error(`Failed to fetch matches: ${res.status}`);
+        
+        const matches = await res.json();
+        allMatches = matches;
+        
+        if (renderToList) {
+          const list = document.getElementById('matchList');
+          list.innerHTML = '';
+
+          if (!Array.isArray(matches) || matches.length === 0) {
+            list.innerHTML = '<p class="text-muted">No matches found.</p>';
+            return;
+          }
+          
+          console.log(`Loaded ${matches.length} matches`);
+          matches.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'card mb-2 p-3';
+            div.innerHTML = `
+              <strong>${m.teamA} vs ${m.teamB}</strong><br/>
+              Scheduled: ${new Date(m.scheduledTime).toLocaleString()}<br/>
+              Tournament: ${getTournamentName(m.tournamentId)}<br/>
+              <small>ID: ${m._id}</small>
+            `;
+            list.appendChild(div);
+          });
+        }
+        
+        return matches;
+      } catch (err) {
+        if (renderToList) {
+          document.getElementById('matchList').textContent = 'Error loading matches.';
+        }
+        console.error("Error loading matches:", err);
+        return [];
+      }
+    }
+    
+    function getTournamentName(tournamentId) {
+      const tournament = allTournaments.find(t => t._id === tournamentId);
+      return tournament ? tournament.name : 'Unknown Tournament';
+    }
+
+    document.getElementById('createTournamentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const complexId = document.getElementById('complexId').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      try {
+        const res = await fetch('/api/tournaments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, complexId, startDate, endDate })
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          document.getElementById('createTournamentForm').reset();
+          await loadMatches(true); //reload matches
+          loadTournaments(); //reload tournaments with updated match data
+        } else {
+          document.getElementById('error').textContent = result.error || 'Failed to create tournament.';
+        }
+      } catch (err) {
+        document.getElementById('error').textContent = 'Network error creating tournament.';
+        console.error("Error creating tournament:", err);
+      }
+    });
+
+    document.getElementById('createMatchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const teamA = document.getElementById('teamA').value;
+      const teamB = document.getElementById('teamB').value;
+      const tournamentId = document.getElementById('tournamentId').value;
+      const scheduledTime = document.getElementById('scheduledTime').value;
+
+      if (teamA === teamB) {
+        document.getElementById('matchError').textContent = 'Team A and Team B must be different.';
+        return;
+      }
+      try {
+        const res = await fetch('/api/matches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamA, teamB, tournamentId, scheduledTime })
+        });
+        const result = await res.json();
+        if (res.ok) {
+          document.getElementById('createMatchForm').reset();
+          document.getElementById('matchError').textContent = '';
+          alert('Match created successfully!');
+          
+          // Reload everything to show the new match
+          await loadMatches(true);
+          loadTournaments();
+        } else {
+          document.getElementById('matchError').textContent = result.error || 'Failed to create match.';
+        }
+      } catch (err) {
+        document.getElementById('matchError').textContent = 'Network error creating match.';
+        console.error("Error creating match:", err);
+      }
+    });
+
+    // Initialize the page
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log("Page initialized");
+      populateComplexDropdown();
+      loadTournaments();
+      loadMatches();
+    });
+  </script>
+  <hr />
+  <div class="text-center mb-4">
+    <a href="/" class="btn btn-outline-primary">← Back to Home</a>
+  </div>
+</body>
+</html>

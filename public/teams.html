@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Team Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h2>Your Team</h2>
+    <div id="team-info" class="mb-4"></div>
+    <div id="team-stats" class="mt-4"></div>
+
+    <h4>Add Player</h4>
+    <form id="addPlayerForm" class="mb-3">
+      <div class="mb-2">
+        <label for="playerEmail" class="form-label">Player Email</label>
+        <input type="email" class="form-control" id="playerEmail" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Add to Team</button>
+      <div class="mt-2 text-danger" id="error"></div>
+    </form>
+
+    <h4>Players on Your Team</h4>
+    <ul id="playerList" class="list-group"></ul>
+  </div>
+
+  <script>
+    //IOA 5/10/2025 fixed fetch so it doesnt displayt duplicate people
+    /*async function fetchTeam() {
+    try {
+      const res = await fetch('/api/teams');
+      const data = await res.json();
+      const team = data[0]; // each TeamRep only manages one team
+
+      document.getElementById('team-info').innerHTML = `
+        <p><strong>Team:</strong> ${team.name}</p>
+        <p><strong>Team Representative ID:</strong> ${team.teamRepresentative}</p>
+        <p><strong>Team ID:</strong> ${team._id}</p>
+      `;
+
+      const playerList = document.getElementById('playerList');
+      playerList.innerHTML = ''; 
+
+      team.players.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.textContent = `${p.name} (${p._id})`;
+        playerList.appendChild(li);
+      });
+
+      document.getElementById('addPlayerForm').dataset.teamId = team._id;
+    } catch (err) {
+      document.getElementById('team-info').innerHTML = `<p class="text-danger">Failed to load team data</p>`;
+    }
+}*/
+    async function fetchTeam() {
+      try {
+        const res = await fetch('/api/teams');
+        const data = await res.json();
+        const team = data[0]; // each TeamRep only manages one team
+
+        // <button class="btn btn-sm btn-danger" onclick="deleteTeam('${team._id}')">Delete Team</button>
+        document.getElementById('team-info').innerHTML = `
+          <p><strong>Team:</strong> ${team.name}</p>
+          <p><strong>Team Representative ID:</strong> ${team.teamRepresentative}</p>
+          <p><strong>Team ID:</strong> ${team._id}</p>
+          
+        `;
+
+        const playerList = document.getElementById('playerList');
+        playerList.innerHTML = '';
+
+        team.players.forEach(p => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `
+            ${p.name} (${p._id})
+            <div>
+              <a href="/players/${p._id}" class="btn btn-sm btn-outline-info me-2">Player Stats</a>
+              <button class="btn btn-sm btn-outline-danger" onclick="removePlayer('${team._id}', '${p._id}')">Remove</button>
+            </div>
+          `;
+          playerList.appendChild(li);
+        });
+
+        document.getElementById('addPlayerForm').dataset.teamId = team._id;
+
+        // Example: calculate simple stats
+        const statsRes = await fetch(`/api/teams/${team._id}/stats`);
+        const stats = await statsRes.json();
+
+        document.getElementById('team-stats').innerHTML = `
+          <h5>Team Stats</h5>
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Total Players:</strong> ${stats.players}</li>
+            <li class="list-group-item"><strong>Total Kills:</strong> ${stats.kills}</li>
+            <li class="list-group-item"><strong>Total Digs:</strong> ${stats.digs}</li>
+            <li class="list-group-item"><strong>Total Blocks:</strong> ${stats.blocks}</li>
+            <li class="list-group-item"><strong>Total Assists:</strong> ${stats.assists}</li>
+            <li class="list-group-item"><strong>Total Aces:</strong> ${stats.aces}</li>
+            <li class="list-group-item"><strong>Total Errors:</strong> ${stats.errors}</li>
+          </ul>
+        `;
+
+      } catch (err) {
+        document.getElementById('team-info').innerHTML = `<p class="text-danger">Failed to load team data</p>`;
+      }
+    }
+
+    document.getElementById('addPlayerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('playerEmail').value;
+      const teamId = e.target.dataset.teamId;
+
+      const res = await fetch(`/api/teams/${teamId}/add-player`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        fetchTeam(); // refresh team list
+        // window.location.reload();
+      } 
+      else {
+        document.getElementById('error').textContent = result.error || 'Failed to add player';
+      }
+    });
+
+    /*
+    async function deleteTeam(teamId) {
+      if (!confirm('Are you sure you want to delete your team? This cannot be undone.')) return;
+
+      try {
+        const res = await fetch(`/api/teams/${teamId}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (res.ok) {
+          document.getElementById('team-info').innerHTML = '<p class="text-success">Team deleted.</p>';
+          document.getElementById('playerList').innerHTML = '';
+        } else {
+          alert(result.error || 'Failed to delete team.');
+        }
+      } catch (err) {
+        alert('Error deleting team.');
+      }
+    }
+    */
+    async function removePlayer(teamId, playerId) {
+      if (!confirm('Remove this player from the team?')) return;
+
+      try {
+        const res = await fetch(`/api/teams/${teamId}/remove-player/${playerId}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (res.ok) {
+          fetchTeam(); // Refresh list
+        } else {
+          alert(result.error || 'Failed to remove player.');
+        }
+      } catch (err) {
+        alert('Error removing player.');
+      }
+    }
+
+    fetchTeam();
+  </script>
+  <hr />
+    <div class="text-center mb-4">
+      <a href="/" class="btn btn-outline-primary">← Back to Home</a>
+    </div
+</body>
+</html>
