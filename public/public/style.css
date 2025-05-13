@@ -1,0 +1,187 @@
+
+body {
+  background-color: #3085da;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+
+.login-container,
+.register-container,
+.players-page,
+.team-dashboard,
+.tournament-dashboard,
+.profile-container,
+.scoreboard-container,
+.admin-container,
+.welcome-container {
+  max-width: 800px;
+  margin: 6vh auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+
+.welcome-container {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.input-field,
+select.input-field {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.input-field:focus,
+.submit-button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* === Buttons === */
+.submit-button,
+.action-button,
+.view-button {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+}
+
+.submit-button,
+.action-button.primary-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.submit-button:hover,
+.action-button.primary-button:hover {
+  background-color: #0056b3;
+}
+
+.action-button.secondary-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.action-button.secondary-button:hover {
+  background-color: #5a6268;
+}
+
+.view-button {
+  border: 1px solid #007bff;
+  color: #007bff;
+  background: transparent;
+}
+
+.view-button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+
+.list-item,
+.stat-item,
+.player-item,
+.score-item,
+.tournament-card,
+.complex-item {
+  background-color: #f2f2f2;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.player-list,
+.stats-list,
+.score-list,
+.complex-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1rem;
+}
+
+
+.error-text {
+  color: red;
+  margin-top: 0.75rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+@media (max-width: 600px) {
+  .login-container,
+  .register-container,
+  .players-page,
+  .team-dashboard,
+  .tournament-dashboard,
+  .profile-container,
+  .scoreboard-container,
+  .admin-container,
+  .welcome-container {
+    margin: 2rem 1rem;
+    padding: 1rem;
+  }
+}
+
+
+
+.navbar {
+  width: 100%;
+  background-color: #007bff;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #0056b3;
+}
+
+.nav-link.active-link {
+  background-color: #0056b3;
+  color: #ffffff;
+}

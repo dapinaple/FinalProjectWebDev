@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tournament Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <nav class="navbar-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/register" class="nav-link">Register</a>
+      <a href="/players" class="nav-link">Players</a>
+      <a href="/teams" class="nav-link">Team</a>
+      <a href="/tournaments" class="nav-link">Tournaments</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a href="/scoreboard" class="nav-link">Scoreboard</a>
+    </nav>
+  </header>
+  <div class="tournament-dashboard">
+    
+    <h2>Your Tournaments</h2>
+    <div id="tournamentList" class="tournament-list"></div>
+
+    <h4>Create New Tournament</h4>
+    <form id="createTournamentForm" class="tournament-form">
+      <div class="form-group">
+        <label for="name">Tournament Name</label>
+        <input type="text" id="name" class="input-field" required />
+      </div>
+      <div class="form-group">
+        <label for="complexId">Complex</label>
+        <select id="complexId" class="input-field" required>
+          <option value="">Loading complexes...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" class="input-field" required />
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" class="input-field" required />
+      </div>
+      <button type="submit" class="submit-button">Create Tournament</button>
+      <div id="error" class="error-text"></div>
+    </form>
+  </div>
+
+  <script>
+    async function populateComplexDropdown() {
+      try {
+        const res = await fetch('/api/complexes/all-public');
+        if (!res.ok) throw new Error('Unable to fetch complexes');
+        const complexes = await res.json();
+
+        const select = document.getElementById('complexId');
+        select.innerHTML = '<option value="">Select a complex</option>';
+        complexes.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c._id;
+          opt.textContent = c.name;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        document.getElementById('complexId').innerHTML = '<option value="">Error loading complexes</option>';
+      }
+    }
+
+    async function loadTournaments() {
+      try {
+        const res = await fetch('/api/tournaments');
+        const tournaments = await res.json();
+        const list = document.getElementById('tournamentList');
+        list.innerHTML = '';
+        tournaments.forEach(t => {
+          const div = document.createElement('div');
+          div.className = 'tournament-card';
+          div.innerHTML = `
+            <strong>${t.name}</strong><br/>
+            ${new Date(t.startDate).toLocaleDateString()} - ${new Date(t.endDate).toLocaleDateString()}<br/>
+            <small>ID: ${t._id}</small>
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        document.getElementById('tournamentList').textContent = 'Error loading tournaments.';
+      }
+    }
+
+    document.getElementById('createTournamentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const complexId = document.getElementById('complexId').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      const res = await fetch('/api/tournaments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, complexId, startDate, endDate })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        document.getElementById('createTournamentForm').reset();
+        loadTournaments();
+      } else {
+        document.getElementById('error').textContent = result.error || 'Failed to create tournament.';
+      }
+    });
+
+    populateComplexDropdown();
+    loadTournaments();
+  </script>
+  <script>
+    // Highlight navbar link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.href === window.location.href || window.location.pathname === link.getAttribute('href')) {
+        link.classList.add('active-link');
+      }
+    });
+  </script>
+  <script src="/session.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VolleyManager</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error') === 'unauthorized') {
+      const msg = document.createElement('p');
+      msg.textContent = "You are not authorized to view that page.";
+      msg.className = "error-text";
+      document.body.prepend(msg);
+    }
+  </script>
+  <header class="navbar">
+    <nav class="navbar-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/register" class="nav-link">Register</a>
+      <a href="/players" class="nav-link">Players</a>
+      <a href="/teams" class="nav-link">Team</a>
+      <a href="/tournaments" class="nav-link">Tournaments</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a href="/scoreboard" class="nav-link">Scoreboard</a>
+    </nav>
+  </header>
+  <div class="welcome-container">
+    
+    <h1>Welcome to VolleyManager</h1>
+    <p>A website designed for players, tournament directors, and complex owners alike to host tournaments on a unified platform. Please login if you already have an account or register if you don't to get started.</p>
+    <div class="button-group">
+      <a href="/login" class="action-button primary-button">Login</a>
+      <a href="/register" class="action-button secondary-button">Register</a>
+    </div>
+  </div>
+  <script>
+    // Highlight navbar
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.href === window.location.href || window.location.pathname === link.getAttribute('href')) {
+        link.classList.add('active-link');
+      }
+    });
+  </script>
+  <script src="/session.js"></script>
+</body>
+</html>

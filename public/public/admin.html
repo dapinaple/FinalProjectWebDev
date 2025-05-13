@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <nav class="navbar-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/register" class="nav-link">Register</a>
+      <a href="/players" class="nav-link">Players</a>
+      <a href="/teams" class="nav-link">Team</a>
+      <a href="/tournaments" class="nav-link">Tournaments</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a href="/scoreboard" class="nav-link">Scoreboard</a>
+    </nav>
+  </header>
+  <div class="admin-container">
+    
+    <h2>Your Complexes</h2>
+    <ul class="complex-list" id="complexList"></ul>
+
+    <h4>Add New Complex</h4>
+    <form id="complexForm">
+      <div class="form-group">
+        <label for="complexName">Name</label>
+        <input type="text" id="complexName" class="input-field" required />
+      </div>
+      <div class="form-group">
+        <label for="complexAddress">Address</label>
+        <input type="text" id="complexAddress" class="input-field" required />
+      </div>
+      <div class="form-group">
+        <label for="directorEmail">Assign to Director (email)</label>
+        <input type="email" id="directorEmail" class="input-field" />
+      </div>
+      <button type="submit" class="submit-button">Add Complex</button>
+      <div class="error-text" id="error"></div>
+    </form>
+  </div>
+
+  <script>
+    async function loadComplexes() {
+      const res = await fetch('/api/complexes');
+      const complexes = await res.json();
+      const list = document.getElementById('complexList');
+      list.innerHTML = '';
+      complexes.forEach(c => {
+        const li = document.createElement('li');
+        li.className = 'complex-item';
+        li.innerHTML = `<strong>${c.name}</strong> – ${c.address}`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('complexForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('complexName').value;
+      const address = document.getElementById('complexAddress').value;
+      const email = document.getElementById('directorEmail').value;
+
+      const res = await fetch('/api/complexes/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, address, directorEmail: email })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        loadComplexes();
+        e.target.reset();
+      } else {
+        document.getElementById('error').textContent = result.error || 'Creation failed';
+      }
+    });
+
+    loadComplexes();
+  </script>
+  <script>
+    // Highlight navbar
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.href === window.location.href || window.location.pathname === link.getAttribute('href')) {
+        link.classList.add('active-link');
+      }
+    });
+  </script>
+  <script src="/session.js"></script>
+</body>
+</html>

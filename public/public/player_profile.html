@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Player Profile</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <nav class="navbar-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/register" class="nav-link">Register</a>
+      <a href="/players" class="nav-link">Players</a>
+      <a href="/teams" class="nav-link">Team</a>
+      <a href="/tournaments" class="nav-link">Tournaments</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a href="/scoreboard" class="nav-link">Scoreboard</a>
+    </nav>
+  </header>
+  <div class="profile-container">
+    
+    <h2 id="name">Player</h2>
+    <ul class="stats-list" id="stats"></ul>
+    <p class="error-text" id="error"></p>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id') || window.location.pathname.split('/').pop();
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`/api/public/players/${id}`);
+        const player = await res.json();
+
+        if (!res.ok || player.error) throw new Error(player.error || 'Player not found');
+
+        document.getElementById('name').textContent = player.name;
+        const statsEl = document.getElementById('stats');
+        Object.entries(player.stats).forEach(([key, val]) => {
+          const li = document.createElement('li');
+          li.className = 'stat-item';
+          li.textContent = `${key}: ${val}`;
+          statsEl.appendChild(li);
+        });
+      } catch (err) {
+        document.getElementById('error').textContent = err.message;
+      }
+    }
+
+    loadProfile();
+  </script>
+  <script>
+    // Highlight navbar
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.href === window.location.href || window.location.pathname === link.getAttribute('href')) {
+        link.classList.add('active-link');
+      }
+    });
+  </script>
+  <script src="/session.js"></script>
+</body>
+</html>
