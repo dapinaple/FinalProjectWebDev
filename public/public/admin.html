@@ -27,11 +27,6 @@
       <button type="submit" class="btn btn-success">Add Complex</button>
       <div class="mt-2 text-danger" id="error"></div>
     </form>
-
-    <hr />
-    <div class="text-center mt-4">
-      <a href="/" class="btn btn-outline-primary">← Back to Home</a>
-    </div>
   </div>
 
   <script>
@@ -41,30 +36,30 @@
       const list = document.getElementById('complexList');
       list.innerHTML = '';
       complexes.forEach(c => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `
-          <div>
-            <strong>${c.name}</strong> – ${c.address}
-          </div>
-          <button class="btn btn-danger btn-sm">Delete</button>
-        `;
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.innerHTML = `
+        <div>
+          <strong>${c.name}</strong> – ${c.address}
+        </div>
+        <button class="btn btn-danger btn-sm">Delete</button>
+      `;
 
-        li.querySelector('button').addEventListener('click', async () => {
-          if (confirm(`Are you sure you want to delete "${c.name}"?`)) {
-            const res = await fetch(`/api/complexes/${c._id}`, {
-              method: 'DELETE',
-            });
-            if (res.ok) {
-              loadComplexes(); // Refresh list
-            } else {
-              alert('Failed to delete complex.');
-            }
+      li.querySelector('button').addEventListener('click', async () => {
+        if (confirm(`Are you sure you want to delete "${c.name}"?`)) {
+          const res = await fetch(`/api/complexes/${c._id}`, {
+            method: 'DELETE',
+          });
+          if (res.ok) {
+            loadComplexes(); // Refresh list
+          } else {
+            alert('Failed to delete complex.');
           }
-        });
-
-        list.appendChild(li);
+        }
       });
+
+      list.appendChild(li);
+    });
     }
 
     document.getElementById('complexForm').addEventListener('submit', async (e) => {
@@ -90,5 +85,9 @@
 
     loadComplexes();
   </script>
+  <hr />
+    <div class="text-center mb-4">
+      <a href="/" class="btn btn-outline-primary">← Back to Home</a>
+    </div
 </body>
 </html>
