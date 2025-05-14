@@ -6,7 +6,7 @@ To run type:
 
 'npm i'
 
-'node js seeder'
+'node seeder.js'
 
 'npm start'
 
