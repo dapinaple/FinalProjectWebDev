@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Match Dashboard</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <nav class="navbar-links">
+      <a href="/" class="nav-link">Home</a>
+      <a href="/login" class="nav-link">Login</a>
+      <a href="/register" class="nav-link">Register</a>
+      <a href="/players" class="nav-link">Players</a>
+      <a href="/teams" class="nav-link">Team</a>
+      <a href="/tournaments" class="nav-link">Tournaments</a>
+      <a href="/matches" class="nav-link">Matches</a>
+      <a href="/admin" class="nav-link">Admin</a>
+      <a href="/scoreboard" class="nav-link">Scoreboard</a>
+      <a href="/matches.html" class="nav-link">Match History</a>
+    </nav>
+  </header>
+
+  <div class="match-dashboard">
+    <h2>All Matches</h2>
+    <div id="matchList" class="match-list"></div>
+  </div>
+
+  <script>
+    async function loadMatches() {
+      try {
+        const res = await fetch('/api/matches');
+        if (!res.ok) throw new Error('Failed to fetch matches');
+        const matches = await res.json();
+        const list = document.getElementById('matchList');
+        list.innerHTML = '';
+
+        if (matches.length === 0) {
+          list.textContent = 'No matches found.';
+          return;
+        }
+
+        matches.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'match-card';
+          div.innerHTML = `
+            <strong>${m.teamA} vs ${m.teamB}</strong><br/>
+            Score: ${m.scoreA} - ${m.scoreB}<br/>
+            Date: ${new Date(m.date).toLocaleDateString()}<br/>
+            <small>ID: ${m._id}</small>
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        document.getElementById('matchList').textContent = 'Error loading matches.';
+      }
+    }
+
+    loadMatches();
+  </script>
+
+  <script>
+    // Highlight navbar link
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.href === window.location.href || window.location.pathname === link.getAttribute('href')) {
+        link.classList.add('active-link');
+      }
+    });
+  </script>
+  <script src="/session.js"></script>
+</body>
+</html>
