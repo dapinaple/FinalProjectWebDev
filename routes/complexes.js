@@ -133,5 +133,16 @@ router.post('/create', isAuthenticated, hasRole('ComplexOwner'), async (req, res
         res.status(500).json({error: e.message});
         }
     });
+
+    router.get('/all-public', isAuthenticated, async (req, res) => {
+        try {
+        const complexCol=await matches();
+        const list =await complexCol.find({}, {projection:{name: 1}}).toArray();
+        res.json(list);
+        }
+        catch(e) {
+        res.status(500).json({error: e.message});
+        }
+    });
   
 export default router;

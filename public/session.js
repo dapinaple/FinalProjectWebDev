@@ -35,7 +35,7 @@
     ComplexOwner: ['admin']
   };
 
-  const alwaysAllowed = ['', 'login', 'register', 'scoreboard', 'team_rankings', 'team_rankings.html'];
+  const alwaysAllowed = ['', 'login', 'register', 'scoreboard', 'team_rankings', 'team_rankings.html', "matches", "matches.html"];
   const isAllowed =
     alwaysAllowed.includes(path) ||
     path.endsWith('.html') ||

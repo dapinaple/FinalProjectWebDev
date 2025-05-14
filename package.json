@@ -7,11 +7,12 @@
     "test": "npm start",
     "start": "node server.js"
   },
-  "author": "Christos Zervas 20006594, Ioannis Magkaniotis 20028049, ",
+  "author": "Christos Zervas 20006594, Ioannis Magkaniotis 20028049, Joshua Levandoske 20024308",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "http": "^0.0.1-security",
