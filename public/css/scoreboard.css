@@ -117,3 +117,74 @@ tr:hover {
     font-style: italic;
     padding: 10px 0;
 }
+
+.match-header {
+    background-color: #333;
+    color: white;
+    padding: 15px 20px;
+    font-size: 1.1em;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.match-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.match-time {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.score-display {
+    background-color: #f8f8f8;
+    padding: 30px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.team-name {
+    font-size: 1.5em;
+    font-weight: 600;
+    flex: 1 1 30%;
+}
+
+.score {
+    font-size: 2.5em;
+    font-weight: 800;
+    color: #222;
+    min-width: 80px;
+    text-align: center;
+    flex: 0 0 auto;
+}
+
+.vs {
+    font-size: 1.2em;
+    color: #999;
+    padding: 0 10px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .score-display {
+        flex-direction: column;
+    }
+    .team-name, .score, .vs {
+        flex: none;
+    }
+}
+
+.scoreboard-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #222;
+    font-size: 2em;
+    font-weight: 700;
+}
