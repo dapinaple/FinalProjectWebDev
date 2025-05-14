@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Team Rankings</title>
+<link href="/css/team_rankings.css" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet"/><script src="session.js"></script></head>
+<body><nav class="navbar-links">
+<a class="nav-link" href="/">Home</a>
+<a class="nav-link" href="/login">Login</a>
+<a class="nav-link" href="/register">Register</a>
+<a class="nav-link" href="/players">Players</a>
+<a class="nav-link" href="/teams">Team</a>
+<a href="/team_rankings.html" class="nav-link">Team Rankings</a>
+<a class="nav-link" href="/tournaments">Tournaments</a>
+<a class="nav-link" href="/admin">Admin</a>
+<a class="nav-link" href="/scoreboard">Scoreboard</a>
+</nav>
+<div class="container">
+<h1>Team Rankings</h1>
+<table id="rankingTable">
+<thead>
+<tr>
+<th>Rank</th>
+<th>Team ID</th>
+<th>Score</th>
+</tr>
+</thead>
+<tbody>
+<!-- Rankings will be loaded here -->
+</tbody>
+</table>
+</div>
+<script>
+  async function loadRankings() {
+    try {
+      const res = await fetch('/api/rankings');
+      const data = await res.json();
+
+      const tbody = document.querySelector('#rankingTable tbody');
+      tbody.innerHTML = ''; // Clear previous data
+
+      data.sort((a, b) => b.winLossRatio - a.winLossRatio).forEach((team, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${team.teamId}</td>
+          <td>${team.winLossRatio}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (err) {
+      console.error('Failed to load rankings:', err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadRankings();
+  });
+</script>
+</body>
+</html>

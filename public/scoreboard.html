@@ -2,10 +2,21 @@
 <html>
 <head>
   <title>Live Scoreboard</title>
-  <link rel="stylesheet" href="/css/scoreboard.css">
+  <link href="/style.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/><script src="session.js"></script></head>
   <script src="/socket.io/socket.io.js"></script>
 </head>
-<body>
+<body><nav class="navbar-links">
+<a class="nav-link" href="/">Home</a>
+<a class="nav-link" href="/login">Login</a>
+<a class="nav-link" href="/register">Register</a>
+<a class="nav-link" href="/players">Players</a>
+<a class="nav-link" href="/teams">Team</a>
+<a href="/team_rankings.html" class="nav-link">Team Rankings</a>
+<a class="nav-link" href="/tournaments">Tournaments</a>
+<a class="nav-link" href="/admin">Admin</a>
+<a class="nav-link" href="/scoreboard">Scoreboard</a>
+</nav>
   <div class="scoreboard-container">
     <h1>Live Volleyball Scoreboard</h1>
     <div id="scoreboards">Loading matches...</div>

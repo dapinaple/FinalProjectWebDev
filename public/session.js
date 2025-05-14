@@ -11,20 +11,20 @@
     if (isMatch) link.classList.add('active-link');
   });
 
-  // Restrict tabs
-  const navLinks = {
-    players: ['Player'],
-    teams: ['TeamRep'],
-    tournaments: ['TournamentDirector'],
-    admin: ['ComplexOwner']
-  };
+  // // Restrict tabs
+  // const navLinks = {
+  //   players: ['Player'],
+  //   teams: ['TeamRep'],
+  //   tournaments: ['TournamentDirector'],
+  //   admin: ['ComplexOwner']
+  // };
 
-  Object.entries(navLinks).forEach(([id, roles]) => {
-    const link = document.querySelector(`.nav-link[href="/${id}"]`);
-    if (link && (!role || !roles.includes(role))) {
-      link.style.display = 'none';
-    }
-  });
+  // Object.entries(navLinks).forEach(([id, roles]) => {
+  //   const link = document.querySelector(`.nav-link[href="/${id}"]`);
+  //   if (link && (!role || !roles.includes(role))) {
+  //     link.style.display = 'none';
+  //   }
+  // });
 
   // redirect
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
