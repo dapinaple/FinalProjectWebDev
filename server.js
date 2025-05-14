@@ -16,7 +16,7 @@ import authRoutes from './routes/auth.js';
 import matchRoutes from './routes/matches.js';
 import publicRoutes from './routes/public.js';
 import complexRoutes from './routes/complexes.js';
-//import spectatorRoutes from './routes/spectator.js';
+import spectatorRoutes from './routes/spectator.js';
 import directorRoutes from './routes/director.js';
 
 const app = express();
