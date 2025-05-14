@@ -1,14 +1,23 @@
 import { teams, users } from '../../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
+import { validateString } from '../../helpers.js';
 
 
 export async function getTeam(teamId) {
+
+  teamId = validateString(teamId)
+
   const teamCollection = await teams();
   const res = await teamCollection.getOne({_id: new ObjectId(teamId)});
   if(!res) throw new Error('Cannot find team')
 }
 
 export async function createTeam({ name, teamRepresentativeID, repId }) {
+
+  name = validateString(name)
+  teamRepresentativeID = validateString(teamRepresentativeID)
+  repId = validateString(repId)
+
   const teamCollection = await teams();
   const newTeam = {
     name,
@@ -44,6 +53,10 @@ export async function createTeam({ name, teamRepresentativeID, repId }) {
 // }
 
 export async function addPlayerToTeam(teamId, email) {
+
+  teamId = validateString(teamId)
+  email = validateString(email)
+
   const teamCollection = await teams();
   const userCollection = await users();
 

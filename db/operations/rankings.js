@@ -1,7 +1,12 @@
 import { rankings } from '../../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
+import { validateString } from '../../helpers.js';
 
 export async function getOrCreateRanking(teamId, complexId) {
+
+  teamId = validateString(teamId)
+  complexId = validateString(complexId)
+
   const rankingCollection = await rankings();
   let ranking = await rankingCollection.findOne({
     teamId: new ObjectId(teamId),
@@ -22,6 +27,11 @@ export async function getOrCreateRanking(teamId, complexId) {
 }
 
 export async function updateWinLoss(winnerTeamId, loserTeamId, complexId) {
+
+  winnerTeamId = validateString(winnerTeamId)
+  loserTeamId = validateString(loserTeamId)
+  complexId = validateString(complexId)
+
   const rankingCollection = await rankings();
   await rankingCollection.updateOne(
     { teamId: new ObjectId(winnerTeamId), complexId: new ObjectId(complexId) },

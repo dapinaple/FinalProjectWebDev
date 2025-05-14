@@ -2,8 +2,14 @@
 import { ObjectId } from 'mongodb';
 
 import { users, teams } from '../../config/mongoCollections.js';
+import { validateString } from '../../helpers.js';
 
 export async function createUser({ role, name, email, passwordHash }) {
+
+  role = validateString(role)
+  name = validateString(name)
+  email = validateString(email)
+
   const userCollection = await users();
   const newUser = {
     role,
@@ -55,11 +61,17 @@ export async function createUser({ role, name, email, passwordHash }) {
 // }
 
 export async function getUserByEmail(email) {
+
+  email = validateString(email)
+
   const userCollection = await users();
   return await userCollection.findOne({ email });
 }
 
 export async function getUserById(id) {
+
+  id = validateString(id)
+
   const userCollection = await users();
   return await userCollection.findOne({ _id: new ObjectId(id) });
 }

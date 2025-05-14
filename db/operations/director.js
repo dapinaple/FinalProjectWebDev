@@ -1,3 +1,5 @@
+import { validateString } from "../../helpers";
+
 async function loadLiveMatches() {
     try {
       const res = await fetch('/director/live-matches');
@@ -32,6 +34,9 @@ async function loadLiveMatches() {
   }
   
   async function submitScore(e, matchId) {
+
+    matchId = validateString(matchId)
+
     e.preventDefault();
     const form = e.target;
     const team1 = parseInt(form.team1.value);

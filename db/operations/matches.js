@@ -1,14 +1,23 @@
 import { compareSync } from 'bcrypt';
 import { matches, tournaments, teams } from '../../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
+import { validateString, validateArray, validateInteger } from '../../helpers.js'
 
 export async function getMatch(matchId) {
+
+  matchId = validateString(matchId)
+
   const matchCollection = await matches();
   const res = await matchCollection.findOne({_id: new ObjectId(matchId)})
   if(!res) throw new Error('Match not found')
 }
 
 export async function createMatch({ tournamentId, teamA, teamB, scheduledTime }) {
+
+  tournamentId = validateString(tournamentId)
+  teamA = validateString(teamA)
+  teamB = validateString(teamB)
+  if(!scheduledTime) throw "scheduledTime not found"
 
   const tournamentCollection = await tournaments();
   const teamsCollection = await teams();
@@ -43,6 +52,11 @@ export async function createMatch({ tournamentId, teamA, teamB, scheduledTime })
 }
 
 export async function reportMatchScore(matchId, scoreA, scoreB) {
+
+  matchId = validateString(matchId)
+  scoreA = validateInteger(scoreA)
+  scoreB = validateInteger(scoreB)
+
   const matchCollection = await matches();
   const match = await matchCollection.findOne({ _id: new ObjectId(matchId) });
   if (!match) throw new Error('Match not found');
@@ -65,6 +79,10 @@ export async function reportMatchScore(matchId, scoreA, scoreB) {
 }
 
 export async function enterPlayerStats(matchId, statsArray) {
+
+  matchId = validateString(matchId)
+  statsArray = validateArray(statsArray)
+
   const matchCollection = await matches();
   await matchCollection.updateOne(
     { _id: new ObjectId(matchId) },
@@ -73,6 +91,11 @@ export async function enterPlayerStats(matchId, statsArray) {
 }
 
 export const recordMatchScore = async (matchId, team1Score, team2Score) => {
+
+  matchId = validateString(matchId)
+  team1Score = validateInteger(team1Score)
+  team2Score = validateInteger(team2Score)
+
   const matchCol = await matches();
   const updated = await matchCol.findOneAndUpdate(
     { _id: new ObjectId(matchId) },
